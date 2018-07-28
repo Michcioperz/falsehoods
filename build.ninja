@@ -100,6 +100,8 @@ build bin/false-main.ml-strip: strip bin/false-main.ml
 build tmp/false-main.ll.s: llc src/main.ll
 build tmp/false-main.ll-gas: gas tmp/false-main.ll.s
 build bin/false-main.ll-gas: ld tmp/false-main.ll-gas
+build bin/false-main.ll-gas-strip: strip bin/false-main.ll-gas
 
 build tmp/false-main.nasm: nasm src/main.nasm
 build bin/false-main.nasm: ld tmp/false-main.nasm
+build bin/false-main.nasm-strip: strip bin/false-main.nasm
