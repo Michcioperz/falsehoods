@@ -1,0 +1,85 @@
+rule strip
+  command = strip -o $out $in
+
+rule gcc.o3
+  command = gcc -O3 -o $out $in
+
+rule gcc.os
+  command = gcc -Os -o $out $in
+
+rule gxx.o3
+  command = g++ -O3 -o $out $in
+
+rule gxx.os
+  command = g++ -Os -o $out $in
+
+rule clang.o3
+  command = clang -O3 -o $out $in
+
+rule clang.os
+  command = clang -Os -o $out $in
+
+rule tcc
+  command = tcc -o $out $in
+
+rule go
+  command = go build -compiler gc -o $out $in
+
+pool crystal_pool
+  depth = 1
+
+rule crystal
+  command = crystal build --release -o $out $in
+  pool = crystal_pool
+
+rule crystal.static
+  command = crystal build --release --static -o $out $in
+  pool = crystal_pool
+
+rule rustc.o3
+  command = rustc -C debuginfo=0 -C opt-level=3 -o $out $in
+
+rule rustc.os
+  command = rustc -C debuginfo=0 -C opt-level=s -o $out $in
+
+rule ghc
+  command = ghc -O -o $out $in
+
+build bin/false-main.c-gcc.o3: gcc.o3 src/main.c
+build bin/false-main.c-gcc.o3-strip: strip bin/false-main.c-gcc.o3
+
+build bin/false-main.c-gcc.os: gcc.os src/main.c
+build bin/false-main.c-gcc.os-strip: strip bin/false-main.c-gcc.os
+
+build bin/false-main.c-clang.o3: clang.o3 src/main.c
+build bin/false-main.c-clang.o3-strip: strip bin/false-main.c-clang.o3
+
+build bin/false-main.c-clang.os: clang.os src/main.c
+build bin/false-main.c-clang.os-strip: strip bin/false-main.c-clang.os
+
+build bin/false-main.c-tcc: tcc src/main.c
+build bin/false-main.c-tcc-strip: strip bin/false-main.c-tcc
+
+build bin/false-main.go-gc: go src/main.go
+build bin/false-main.go-gc-strip: strip bin/false-main.go-gc
+
+build bin/false-main.cr-simple: crystal src/main.cr
+build bin/false-main.cr-simple-strip: strip bin/false-main.cr-simple
+
+build bin/false-main.cr-static: crystal.static src/main.cr
+build bin/false-main.cr-static-strip: strip bin/false-main.cr-static
+
+build bin/false-main.rs-o3: rustc.o3 src/main.rs
+build bin/false-main.rs-o3-strip: strip bin/false-main.rs-o3
+
+build bin/false-main.rs-os: rustc.os src/main.rs
+build bin/false-main.rs-os-strip: strip bin/false-main.rs-os
+
+build bin/false-main.c-gxx.o3: gxx.o3 src/main.cpp
+build bin/false-main.c-gxx.o3-strip: strip bin/false-main.c-gxx.o3
+
+build bin/false-main.c-gxx.os: gxx.os src/main.cpp
+build bin/false-main.c-gxx.os-strip: strip bin/false-main.c-gxx.os
+
+build bin/false-main.hs: ghc src/main.hs
+build bin/false-main.hs-strip: strip bin/false-main.hs
