@@ -1,23 +1,20 @@
 rule strip
   command = strip -o $out $in
 
-rule gcc.o3
-  command = gcc -O3 -o $out $in
-
-rule gcc.os
+rule gcc
   command = gcc -Os -o $out $in
 
-rule gxx.o3
-  command = g++ -O3 -o $out $in
+rule gcc.nostdlib
+  command = gcc -Os -nostdlib -o $out $in
 
-rule gxx.os
+rule gxx
   command = g++ -Os -o $out $in
 
-rule clang.o3
-  command = clang -O3 -o $out $in
-
-rule clang.os
+rule clang
   command = clang -Os -o $out $in
+
+rule clang.nostdlib
+  command = clang -Os -nostdlib -o $out $in
 
 rule tcc
   command = tcc -o $out $in
@@ -39,23 +36,39 @@ rule crystal.static
 rule rustc.o3
   command = rustc -C debuginfo=0 -C opt-level=3 -o $out $in
 
-rule rustc.os
-  command = rustc -C debuginfo=0 -C opt-level=s -o $out $in
+# requires nightly rust
+#rule rustc.os
+#  command = rustc -C debuginfo=0 -C opt-level=s -o $out $in
 
 rule ghc
   command = ghc -O -o $out $in
 
-build bin/false-main.c-gcc.o3: gcc.o3 src/main.c
-build bin/false-main.c-gcc.o3-strip: strip bin/false-main.c-gcc.o3
+rule ocaml
+  command = ocamlopt.opt -O2 -o $out $in
 
-build bin/false-main.c-gcc.os: gcc.os src/main.c
+rule llc
+  command = llc -O3 -x86-asm-syntax=intel -o $out $in
+
+rule gas
+  command = as -o $out $in
+
+rule nasm
+  command = nasm -f elf64 -Ox -o $out $in
+
+rule ld
+  command = ld -s -S -o $out $in
+
+build bin/false-main.c-gcc.os: gcc src/main.c
 build bin/false-main.c-gcc.os-strip: strip bin/false-main.c-gcc.os
 
-build bin/false-main.c-clang.o3: clang.o3 src/main.c
-build bin/false-main.c-clang.o3-strip: strip bin/false-main.c-clang.o3
+build bin/false-asm.c-gcc.nostdlib: gcc.nostdlib src/asm.c
+build bin/false-asm.c-gcc.nostdlib-strip: strip bin/false-asm.c-gcc.nostdlib
 
-build bin/false-main.c-clang.os: clang.os src/main.c
+build bin/false-main.c-clang.os: clang src/main.c
 build bin/false-main.c-clang.os-strip: strip bin/false-main.c-clang.os
+
+build bin/false-asm.c-clang.nostdlib: clang.nostdlib src/asm.c
+build bin/false-asm.c-clang.nostdlib-strip: strip bin/false-asm.c-clang.nostdlib
 
 build bin/false-main.c-tcc: tcc src/main.c
 build bin/false-main.c-tcc-strip: strip bin/false-main.c-tcc
@@ -72,14 +85,21 @@ build bin/false-main.cr-static-strip: strip bin/false-main.cr-static
 build bin/false-main.rs-o3: rustc.o3 src/main.rs
 build bin/false-main.rs-o3-strip: strip bin/false-main.rs-o3
 
-build bin/false-main.rs-os: rustc.os src/main.rs
-build bin/false-main.rs-os-strip: strip bin/false-main.rs-os
+#build bin/false-main.rs-os: rustc.os src/main.rs
+#build bin/false-main.rs-os-strip: strip bin/false-main.rs-os
 
-build bin/false-main.c-gxx.o3: gxx.o3 src/main.cpp
-build bin/false-main.c-gxx.o3-strip: strip bin/false-main.c-gxx.o3
-
-build bin/false-main.c-gxx.os: gxx.os src/main.cpp
+build bin/false-main.c-gxx.os: gxx src/main.cpp
 build bin/false-main.c-gxx.os-strip: strip bin/false-main.c-gxx.os
 
 build bin/false-main.hs: ghc src/main.hs
 build bin/false-main.hs-strip: strip bin/false-main.hs
+
+build bin/false-main.ml: ocaml src/main.ml
+build bin/false-main.ml-strip: strip bin/false-main.ml
+
+build tmp/false-main.ll.s: llc src/main.ll
+build tmp/false-main.ll-gas: gas tmp/false-main.ll.s
+build bin/false-main.ll-gas: ld tmp/false-main.ll-gas
+
+build tmp/false-main.nasm: nasm src/main.nasm
+build bin/false-main.nasm: ld tmp/false-main.nasm
