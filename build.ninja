@@ -105,3 +105,7 @@ build bin/false-main.ll-gas-strip: strip bin/false-main.ll-gas
 build tmp/false-main.nasm: nasm src/main.nasm
 build bin/false-main.nasm: ld tmp/false-main.nasm
 build bin/false-main.nasm-strip: strip bin/false-main.nasm
+
+build tmp/false-main.s: gas src/main.s
+build bin/false-main.s: ld tmp/false-main.s
+build bin/false-main.s-strip: strip bin/false-main.s
