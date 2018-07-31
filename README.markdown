@@ -5,6 +5,7 @@ Some requirements:
  - it should always exit with non-zero code (preferably 1)
  - it shouldn't print anything
  - it should be smol
+ - it should be a binary, not a script, and preferably static
 
 Some would say this is a flawed approach to cute, but I have heard since
 like forever that tall men are naturally drawn to short women yadda
